@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity
 
     private CameraBridgeViewBase mOpenCvCameraView;
 
-    public native void ConvertRGBtoGray(long matAddrInput, long matAddrResult);
+    public native void FindMemberNameInPaper(long matAddrInput, long matAddrResult);
 
 
     static {
@@ -182,7 +182,7 @@ public class MainActivity extends AppCompatActivity
         matInput = inputFrame.rgba();
         if ( matResult == null )
             matResult = new Mat(matInput.rows(), matInput.cols(), matInput.type());
-        ConvertRGBtoGray(matInput.getNativeObjAddr(), matResult.getNativeObjAddr());
+        FindMemberNameInPaper(matInput.getNativeObjAddr(), matResult.getNativeObjAddr());
         return matResult;
     }
 
