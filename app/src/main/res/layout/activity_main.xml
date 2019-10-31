@@ -10,7 +10,7 @@
 
 
     <fragment
-        android:id="@+id/arFragment"
+        android:id="@+id/ar_fragment"
         android:name="lunchgym.first.showmeyourwork.CustomArFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -18,17 +18,27 @@
         opencv:layout_constraintTop_toTopOf="parent"
         />
 
-
-<!--    <org.opencv.android.JavaCameraView
-        android:id="@+id/activity_surface_view"
-        android:layout_width="match_parent"
-        android:layout_height="250dp"
-
-        android:visibility="gone"
-        opencv:camera_id="any"
+    <Button
+        android:id="@+id/btn_capture"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="캡쳐"
         opencv:layout_constraintBottom_toBottomOf="parent"
-        opencv:layout_constraintStart_toStartOf="parent"
-        opencv:layout_constraintVertical_weight="1" />-->
+        opencv:layout_constraintEnd_toEndOf="parent"
+        opencv:layout_constraintStart_toStartOf="parent" />
+
+
+    <!--    <org.opencv.android.JavaCameraView
+            android:id="@+id/activity_surface_view"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+
+            android:visibility="gone"
+            opencv:camera_id="any"
+            opencv:layout_constraintBottom_toBottomOf="parent"
+            opencv:layout_constraintStart_toStartOf="parent"
+            opencv:layout_constraintVertical_weight="1" />-->
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

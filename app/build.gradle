@@ -53,8 +53,17 @@ dependencies {
     implementation 'com.google.ar.sceneform.ux:sceneform-ux:1.13.0'
 
     //파이어베이스(문자인식)
-    implementation 'com.google.firebase:firebase-analytics:17.2.0'
-    implementation 'com.google.firebase:firebase-ml-vision:23.0.0'
+    implementation 'com.google.firebase:firebase-core:17.2.1'
+    implementation 'com.google.firebase:firebase-analytics:17.2.1'
+    implementation 'com.google.firebase:firebase-ml-vision:24.0.0'
+
+    //Camer kit (예제 따라하면서 임시로 추가, 후에 응용해서 적용후 삭제 예정)
+    implementation 'com.wonderkiln:camerakit:0.13.1'
+
+    //Spot dialog
+    implementation 'com.github.d-max:spots-dialog:1.1@aar'
+
+
 
 
 }

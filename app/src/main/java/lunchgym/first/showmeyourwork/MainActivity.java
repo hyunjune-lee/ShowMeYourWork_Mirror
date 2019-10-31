@@ -1,24 +1,24 @@
 package lunchgym.first.showmeyourwork;
 
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.DialogInterface;
+import android.app.AlertDialog;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.ImageFormat;
+import android.graphics.Rect;
+import android.graphics.YuvImage;
+import android.media.Image;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
-import android.annotation.TargetApi;
-import android.content.pm.PackageManager;
-import android.os.Build;
-import android.util.Log;
-import android.view.SurfaceView;
-import android.view.WindowManager;
+import android.widget.Button;
 
 import com.google.ar.core.Anchor;
 import com.google.ar.core.AugmentedImage;
 import com.google.ar.core.Frame;
 import com.google.ar.core.TrackingState;
+import com.google.ar.core.exceptions.NotYetAvailableException;
 import com.google.ar.sceneform.AnchorNode;
 import com.google.ar.sceneform.FrameTime;
 import com.google.ar.sceneform.Scene;
@@ -27,23 +27,20 @@ import com.google.ar.sceneform.rendering.Color;
 import com.google.ar.sceneform.rendering.ExternalTexture;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 
-import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
-import org.opencv.android.LoaderCallbackInterface;
-import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Mat;
 
+import java.io.ByteArrayOutputStream;
+import java.nio.ByteBuffer;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
-import static android.Manifest.permission.CAMERA;
+import dmax.dialog.SpotsDialog;
 
 
 /*public class MainActivity extends AppCompatActivity
         implements CameraBridgeViewBase.CvCameraViewListener2 {*/
 
-    public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity {
 
 
     private static final String TAG = "opencv";
@@ -75,16 +72,19 @@ import static android.Manifest.permission.CAMERA;
     //==============================================================================================
 
 
+    //파이어베이스 OCR 관련 변수====================================================================
+    AlertDialog waitingDialog;
+    Button btnCapture;
 
-    //크롤링 관련 변수==============================================================================
 
 
 
     //==============================================================================================
 
+    //크롤링 관련 변수==============================================================================
 
 
-
+    //==============================================================================================
 
 
     @Override
@@ -92,6 +92,36 @@ import static android.Manifest.permission.CAMERA;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+        //파이어베이스 OCR==========================================================================
+        //대기 다이어로그
+        waitingDialog = new SpotsDialog.Builder()
+                .setCancelable(false)
+                .setMessage("잠시만 기달려주세요")
+                .setContext(this)
+                .build();
+
+
+        btnCapture = findViewById(R.id.btn_capture);
+        btnCapture.setOnClickListener(v -> {
+
+            try {
+                Image imageCapture = arFragment.getArSceneView().getArFrame().acquireCameraImage();
+
+                byte[] byteArray = imageToByte(imageCapture);
+
+                Bitmap bitmapImage = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length, null);
+
+            } catch (NotYetAvailableException e) {
+                e.printStackTrace();
+            }
+
+
+
+
+
+
+        });
 
         //AR========================================================================================
         texture = new ExternalTexture();
@@ -114,14 +144,11 @@ import static android.Manifest.permission.CAMERA;
                 });
 
         arFragment = (CustomArFragment)
-                getSupportFragmentManager().findFragmentById(R.id.arFragment);
+                getSupportFragmentManager().findFragmentById(R.id.ar_fragment);
 
         scene = arFragment.getArSceneView().getScene();
 
         scene.addOnUpdateListener(this::onUpdate);
-
-
-
 
 
         //==========================================================================================
@@ -164,7 +191,7 @@ import static android.Manifest.permission.CAMERA;
 
                     isImageDetected = true;
 
-                    playVideo (image.createAnchor(image.getCenterPose()), image.getExtentX(),
+                    playVideo(image.createAnchor(image.getCenterPose()), image.getExtentX(),
                             image.getExtentZ());
 
                     break;
@@ -227,8 +254,7 @@ import static android.Manifest.permission.CAMERA;
     }
 
     @Override
-    public void onResume()
-    {
+    public void onResume() {
         super.onResume();
 
         //OpenCV====================================================================================
@@ -253,9 +279,6 @@ import static android.Manifest.permission.CAMERA;
         //===========================================================================================
 
     }
-
-
-
 
 
     //OpenCV 관련 메소드============================================================================
@@ -353,7 +376,47 @@ import static android.Manifest.permission.CAMERA;
         });
         builder.create().show();
     }*/
-    //=============================================================================================
+    //==============================================================================================
+
+
+    //Image to Bitmap===============================================================================
+    //(ar fragment 에서 비트맵 얻어서 파이어베이스 문자 인식하려고)
+    private static byte[] imageToByte(Image image){
+        byte[] byteArray = null;
+        byteArray = NV21toJPEG(YUV420toNV21(image),image.getWidth(),image.getHeight(),100);
+        return byteArray;
+    }
+
+    private static byte[] NV21toJPEG(byte[] nv21, int width, int height, int quality) {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        YuvImage yuv = new YuvImage(nv21, ImageFormat.NV21, width, height, null);
+        yuv.compressToJpeg(new Rect(0, 0, width, height), quality, out);
+        return out.toByteArray();
+    }
+
+    private static byte[] YUV420toNV21(Image image) {
+        byte[] nv21;
+        // Get the three planes.
+        ByteBuffer yBuffer = image.getPlanes()[0].getBuffer();
+        ByteBuffer uBuffer = image.getPlanes()[1].getBuffer();
+        ByteBuffer vBuffer = image.getPlanes()[2].getBuffer();
+
+        int ySize = yBuffer.remaining();
+        int uSize = uBuffer.remaining();
+        int vSize = vBuffer.remaining();
+
+
+        nv21 = new byte[ySize + uSize + vSize];
+
+        //U and V are swapped
+        yBuffer.get(nv21, 0, ySize);
+        vBuffer.get(nv21, ySize, vSize);
+        uBuffer.get(nv21, ySize + vSize, uSize);
+
+        return nv21;
+    }
+
+    //==============================================================================================
 
 
 }
