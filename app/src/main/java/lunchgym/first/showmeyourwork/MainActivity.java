@@ -40,15 +40,14 @@ import java.util.List;
 import static android.Manifest.permission.CAMERA;
 
 
-/*public class MainActivity extends AppCompatActivity
-        implements CameraBridgeViewBase.CvCameraViewListener2 {*/
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity
+        implements CameraBridgeViewBase.CvCameraViewListener2 {
 
 
     private static final String TAG = "opencv";
 
     //OpenCV 관련 변수===============================================================================
-    /*private Mat matInput;
+    private Mat matInput;
     private Mat matResult;
 
     private CameraBridgeViewBase mOpenCvCameraView;
@@ -59,7 +58,7 @@ public class MainActivity extends AppCompatActivity{
     static {
         System.loadLibrary("opencv_java4");
         System.loadLibrary("native-lib");
-    }*/
+    }
     //==============================================================================================
 
     //AR 관련 변수==================================================================================
@@ -131,7 +130,7 @@ public class MainActivity extends AppCompatActivity{
 
         //OpenCV====================================================================================
 
-/*        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
                 WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -140,7 +139,7 @@ public class MainActivity extends AppCompatActivity{
         mOpenCvCameraView = (CameraBridgeViewBase)findViewById(R.id.activity_surface_view);
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
         mOpenCvCameraView.setCvCameraViewListener(this);
-        mOpenCvCameraView.setCameraIndex(0); // front-camera(1),  back-camera(0)*/
+        mOpenCvCameraView.setCameraIndex(0); // front-camera(1),  back-camera(0)
         //===========================================================================================
 
     }
@@ -202,7 +201,7 @@ public class MainActivity extends AppCompatActivity{
         super.onStart();
 
         //OpenCV====================================================================================
-        /*boolean havePermission = true;
+        boolean havePermission = true;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(CAMERA) != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[]{CAMERA}, CAMERA_PERMISSION_REQUEST_CODE);
@@ -211,7 +210,7 @@ public class MainActivity extends AppCompatActivity{
         }
         if (havePermission) {
             onCameraPermissionGranted();
-        }*/
+        }
         //===========================================================================================
     }
 
@@ -219,9 +218,9 @@ public class MainActivity extends AppCompatActivity{
     @Override
     public void onPause() {
         //OpenCV====================================================================================
-        /*super.onPause();
+        super.onPause();
         if (mOpenCvCameraView != null)
-            mOpenCvCameraView.disableView();*/
+            mOpenCvCameraView.disableView();
         //===========================================================================================
 
         super.onPause();
@@ -233,13 +232,13 @@ public class MainActivity extends AppCompatActivity{
         super.onResume();
 
         //OpenCV====================================================================================
-        /*if (!OpenCVLoader.initDebug()) {
+        if (!OpenCVLoader.initDebug()) {
             Log.d(TAG, "onResume :: Internal OpenCV library not found.");
             OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_2_0, this, mLoaderCallback);
         } else {
             Log.d(TAG, "onResum :: OpenCV library found inside package. Using it!");
             mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
-        }*/
+        }
         //===========================================================================================
 
     }
@@ -249,9 +248,8 @@ public class MainActivity extends AppCompatActivity{
         super.onDestroy();
 
         //OpenCV====================================================================================
-/*
         if (mOpenCvCameraView != null)
-            mOpenCvCameraView.disableView();*/
+            mOpenCvCameraView.disableView();
         //===========================================================================================
 
     }
@@ -261,7 +259,7 @@ public class MainActivity extends AppCompatActivity{
 
 
     //OpenCV 관련 메소드============================================================================
-    /*private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
+    private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
         public void onManagerConnected(int status) {
             switch (status) {
@@ -354,7 +352,7 @@ public class MainActivity extends AppCompatActivity{
             }
         });
         builder.create().show();
-    }*/
+    }
     //=============================================================================================
 
 
