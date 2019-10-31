@@ -10,19 +10,25 @@
 
 
     <fragment
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
         android:id="@+id/arFragment"
-        android:name="lunchgym.first.showmeyourwork.CustomArFragment"/>
-
-
-
-    <org.opencv.android.JavaCameraView
+        android:name="lunchgym.first.showmeyourwork.CustomArFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        opencv:camera_id="any"
+        opencv:layout_constraintEnd_toEndOf="parent"
+        opencv:layout_constraintTop_toTopOf="parent"
+        />
+
+
+<!--    <org.opencv.android.JavaCameraView
+        android:id="@+id/activity_surface_view"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+
         android:visibility="gone"
-        android:id="@+id/activity_surface_view" />
+        opencv:camera_id="any"
+        opencv:layout_constraintBottom_toBottomOf="parent"
+        opencv:layout_constraintStart_toStartOf="parent"
+        opencv:layout_constraintVertical_weight="1" />-->
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
