@@ -1,5 +1,6 @@
 package lunchgym.first.showmeyourwork;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
@@ -12,8 +13,12 @@ import android.media.Image;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.ar.core.Anchor;
 import com.google.ar.core.AugmentedImage;
 import com.google.ar.core.Frame;
@@ -26,12 +31,19 @@ import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.rendering.Color;
 import com.google.ar.sceneform.rendering.ExternalTexture;
 import com.google.ar.sceneform.rendering.ModelRenderable;
+import com.google.firebase.ml.vision.FirebaseVision;
+import com.google.firebase.ml.vision.cloud.FirebaseVisionCloudDetectorOptions;
+import com.google.firebase.ml.vision.common.FirebaseVisionImage;
+import com.google.firebase.ml.vision.text.FirebaseVisionCloudTextRecognizerOptions;
+import com.google.firebase.ml.vision.text.FirebaseVisionText;
+import com.google.firebase.ml.vision.text.FirebaseVisionTextRecognizer;
 
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.core.Mat;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.Collection;
 
 import dmax.dialog.SpotsDialog;
@@ -101,16 +113,25 @@ public class MainActivity extends AppCompatActivity {
                 .setContext(this)
                 .build();
 
-
+        //캡처버튼
         btnCapture = findViewById(R.id.btn_capture);
         btnCapture.setOnClickListener(v -> {
 
             try {
+                // ar fragment 에서 이미지 가져오기
+                // 후에 opencv 와 연동하면 opencv 에서 데이터 받는것도 ar fragment 에서 받아와야할지도
                 Image imageCapture = arFragment.getArSceneView().getArFrame().acquireCameraImage();
 
+                //대기 다이어로그 띄어주기
+                waitingDialog.show();
+
+                //바이트 배열을 얻는다(이미지를 비트맵으로 바꾸기위해서 필요)
                 byte[] byteArray = imageToByte(imageCapture);
 
-                Bitmap bitmapImage = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length, null);
+                //얻은 비트맵
+                Bitmap bitmapCapture = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length, null);
+                
+                recognizeText(bitmapCapture);
 
             } catch (NotYetAvailableException e) {
                 e.printStackTrace();
@@ -168,6 +189,49 @@ public class MainActivity extends AppCompatActivity {
         //===========================================================================================
 
     }
+
+
+    //파이어베이스 OCR==============================================================================
+
+    //파이어베이스로 찍은 비트맵의 문자 인식
+    private void recognizeText(Bitmap bitmapCapture) {
+        FirebaseVisionImage image = FirebaseVisionImage.fromBitmap(bitmapCapture);
+
+        //힌트 랭귀지 => 한국인데.. (ko 값들이 많아서 어떻게 적절한건지 모르겠음)
+        FirebaseVisionCloudTextRecognizerOptions options =
+                new FirebaseVisionCloudTextRecognizerOptions.Builder().setLanguageHints(Arrays.asList("ko"))
+                .build();
+
+        FirebaseVisionTextRecognizer textRecognizer = FirebaseVision.getInstance()
+                .getCloudTextRecognizer(options);
+
+        textRecognizer.processImage(image)
+                .addOnSuccessListener(new OnSuccessListener<FirebaseVisionText>() {
+                    @Override
+                    public void onSuccess(FirebaseVisionText firebaseVisionText) {
+                        Log.w(TAG, "onSuccess: "+firebaseVisionText.getText() );
+                        //인덱스 들어가니깐 아마 예외처리 해줘야할듯
+                        Toast.makeText(getApplicationContext()  , firebaseVisionText.getTextBlocks().get(0).toString(), Toast.LENGTH_LONG).show();
+
+
+                        //대기 다이어로그 없애주기
+                        waitingDialog.dismiss();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d(TAG, "onFailure: 파이어베이스 텍스트 인식 실패");
+
+            }
+        });
+
+
+    }
+
+    //==============================================================================================
+
+
+
 
     //AR============================================================================================
     private void onUpdate(FrameTime frameTime) {
