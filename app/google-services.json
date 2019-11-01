@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "755074162204",
+    "firebase_url": "https://showmeyourwork-2f225.firebaseio.com",
+    "project_id": "showmeyourwork-2f225",
+    "storage_bucket": "showmeyourwork-2f225.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:755074162204:android:cbfe0244e4db93a1a089d9",
+        "android_client_info": {
+          "package_name": "lunchgym.first.showmeyourwork"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "755074162204-8pghqsp0v6fmdg36j51rfdkhdgru50sm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "lunchgym.first.showmeyourwork",
+            "certificate_hash": "47131668c9b1186f05e0a69880df6278074a8eb9"
+          }
+        },
+        {
+          "client_id": "755074162204-mv231k8qv3k8i1hl9e00e5tqfu049fo8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCJELF1n8LtLUIlbwmtyClSpbJ_HjxkjOc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "755074162204-mv231k8qv3k8i1hl9e00e5tqfu049fo8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
