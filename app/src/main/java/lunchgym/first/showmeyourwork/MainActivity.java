@@ -25,6 +25,7 @@ import com.google.ar.core.AugmentedImage;
 import com.google.ar.core.Frame;
 import com.google.ar.core.TrackingState;
 import com.google.ar.core.exceptions.NotYetAvailableException;
+import com.google.ar.core.exceptions.ResourceExhaustedException;
 import com.google.ar.sceneform.AnchorNode;
 import com.google.ar.sceneform.FrameTime;
 import com.google.ar.sceneform.Scene;
@@ -47,6 +48,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Objects;
 
 import dmax.dialog.SpotsDialog;
 
@@ -94,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
     //파이어베이스 OCR 관련 변수====================================================================
     AlertDialog waitingDialog;
     Button btnCapture;
-
+    Image imageCapture;
 
 
 
@@ -132,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 // ar fragment 에서 이미지 가져오기
                 // 후에 opencv 와 연동하면 opencv 에서 데이터 받는것도 ar fragment 에서 받아와야할지도
-                Image imageCapture = arFragment.getArSceneView().getArFrame().acquireCameraImage();
+                imageCapture = Objects.requireNonNull(arFragment.getArSceneView().getArFrame()).acquireCameraImage();
 
                 //대기 다이어로그 띄어주기
                 waitingDialog.show();
@@ -149,9 +151,17 @@ public class MainActivity extends AppCompatActivity {
                 //파이어베이스 문자 인식
                 recognizeText(bitmapCapture);
 
-            } catch (NotYetAvailableException e) {
+            } catch (NotYetAvailableException e  ) {
                 e.printStackTrace();
+                Log.w(TAG, "OCR - onCreate: btnCapture NotYetAvailableException ");
             }
+            catch (ResourceExhaustedException e ){
+                e.printStackTrace();
+                Log.w(TAG, "OCR - onCreate: btnCapture ResourceExhaustedException ");
+
+
+            }
+
 
 
 
@@ -237,9 +247,14 @@ public class MainActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<FirebaseVisionText>() {
                     @Override
                     public void onSuccess(FirebaseVisionText firebaseVisionText) {
-                        Log.w(TAG, "onSuccess: "+firebaseVisionText.getText() );
+                        Log.w(TAG, "OCR -  onSuccess: "+firebaseVisionText.getText() );
                         //인덱스 들어가니깐 아마 예외처리 해줘야할듯
                         Toast.makeText(getApplicationContext()  , firebaseVisionText.getTextBlocks().get(0).toString(), Toast.LENGTH_LONG).show();
+
+                        //이미지 acquired 해제해주기
+                        //이거 안해주면 5번째찍을때부터 ResourceExhaustedException 뜸
+                        imageCapture.close();
+
                         //대기 다이어로그 없애주기
                         waitingDialog.dismiss();
 
