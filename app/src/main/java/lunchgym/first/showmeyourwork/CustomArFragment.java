@@ -27,11 +27,16 @@ public class CustomArFragment extends ArFragment {
         config.setUpdateMode(Config.UpdateMode.LATEST_CAMERA_IMAGE);
         config.setFocusMode(Config.FocusMode.AUTO);
 
+        //AR 이미지 데이터 베이스
         AugmentedImageDatabase aid = new AugmentedImageDatabase(session);
 
+
+        //AR 이미지 데이터 베이스에 예쁜 아이린 이미지(테스트용)
         Bitmap image = BitmapFactory.decodeResource(getResources(), R.drawable.irene);
+        //이미지 데이터베이스에 넣을때 키워드도 같이 들어가네
         aid.addImage("image", image);
 
+        //데이터 베이스를 다시 config 에 설정해주고 리턴해주네
         config.setAugmentedImageDatabase(aid);
 
         this.getArSceneView().setupSession(session);
@@ -45,7 +50,7 @@ public class CustomArFragment extends ArFragment {
 
         FrameLayout frameLayout = (FrameLayout) super.onCreateView(inflater, container, savedInstanceState);
 
-
+        //이거 안 숨기면 처음에 듀토리얼 같이 손 나옴
         getPlaneDiscoveryController().hide();
         getPlaneDiscoveryController().setInstructionView(null);
 

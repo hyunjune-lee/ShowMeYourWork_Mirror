@@ -158,7 +158,6 @@ public class MainActivity extends AppCompatActivity {
                 bitmapCapture = Bitmap.createBitmap(bitmapCapture, 0, 0, bitmapCapture.getWidth(), bitmapCapture.getHeight(), rotatedMatrix, true);
 
 
-                //테스트용(확인해 봤는데 90도 돌아가 있네ㄷㄷ)
                 ivTest.setImageBitmap(bitmapCapture);
 
                 //파이어베이스 문자 인식
