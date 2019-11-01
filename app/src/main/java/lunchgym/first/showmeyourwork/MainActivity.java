@@ -43,6 +43,7 @@ import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.core.Mat;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Collection;
@@ -161,8 +162,20 @@ public class MainActivity extends AppCompatActivity {
 
         //AR========================================================================================
         texture = new ExternalTexture();
+        mediaPlayer = new MediaPlayer();
+//        mediaPlayer = MediaPlayer.create(this, Uri.parse("https://serviceapi.nmv.naver.com/view/ugcPlayer.nhn?vid=7DCA747C80C640305145C42E13B6329C4660&inKey=V1268b72f809c30d1ef02c87c44d03bf0878269db9d3b7e681252ba8028ec7566512ec87c44d03bf08782&wmode=opaque&hasLink=1&autoPlay=false&beginTime=0"));
+//
+//        mediaPlayer = MediaPlayer.create(this, R.raw.test_video);
+        try {
+//            mediaPlayer.setDataSource("https://serviceapi.nmv.naver.com/view/ugcPlayer.nhn?vid=7DCA747C80C640305145C42E13B6329C4660&inKey=V1268b72f809c30d1ef02c87c44d03bf0878269db9d3b7e681252ba8028ec7566512ec87c44d03bf08782&wmode=opaque&hasLink=1&autoPlay=false&beginTime=0");
+            mediaPlayer.setDataSource("https://media.fmkorea.com/files/attach/new/20191101/486263/1651469947/2337202584/508a93d482fc2fcec3d50429dfc17cbc.gif.mp4?d\n");
+            mediaPlayer.prepare();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.w(TAG, "mediaPlayer.setDataSource: fail" );
+        }
 
-        mediaPlayer = MediaPlayer.create(this, R.raw.test_video);
+
         mediaPlayer.setSurface(texture.getSurface());
         mediaPlayer.setLooping(true);
 
