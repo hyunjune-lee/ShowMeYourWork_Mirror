@@ -16,6 +16,11 @@ android {
             }
         }
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+
+    }
     buildTypes {
         release {
             minifyEnabled false
@@ -38,4 +43,13 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     implementation project(path: ':opencv')
+
+    //exoplayer 사용
+    implementation 'com.google.android.exoplayer:exoplayer:2.7.3'
+    //크롤링, exoplayer에 사용할 jsoup
+    implementation 'org.jsoup:jsoup:1.10.3'
+
+
+    //hls(HttpLiveStreaming)사용
+    implementation "com.google.android.exoplayer:exoplayer-hls:2.10.5"
 }

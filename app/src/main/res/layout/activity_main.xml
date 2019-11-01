@@ -8,11 +8,34 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <org.opencv.android.JavaCameraView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        opencv:camera_id="any"
-        android:visibility="gone"
-        android:id="@+id/activity_surface_view" />
+    <Button
+        android:id="@+id/exoplayer_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="exoplayer"
+         />
+
+    <Button
+        android:id="@+id/webview_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="웹뷰 영상 재생"
+         />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/camera_btn"
+        android:text="흑백 카메라"
+        />
+
+    <Button
+        android:id="@+id/crolling_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="크롤링"
+        />
+
+
 
 </LinearLayout>

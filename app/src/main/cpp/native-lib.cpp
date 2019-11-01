@@ -7,7 +7,7 @@ using namespace cv;
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_lunchgym_first_showmeyourwork_MainActivity_ConvertRGBtoGray(JNIEnv *env, jobject thiz,
+Java_lunchgym_first_showmeyourwork_CameraActivity_ConvertRGBtoGray(JNIEnv *env, jobject thiz,
                                                                  jlong matAddrInput,
                                                                  jlong matAddrResult) {
     Mat &matInput = *(Mat *)matAddrInput;

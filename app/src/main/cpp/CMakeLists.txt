@@ -5,7 +5,7 @@
 
 cmake_minimum_required(VERSION 3.4.1)
 
-set(pathPROJECT C:/Users/LG/Desktop/TeamNova/ShowMeYourWork2) # 수정필요
+set(pathPROJECT /Users/TEO/Downloads/ShowYourWork)
 set(pathOPENCV ${pathPROJECT}/opencv)
 set(pathLIBOPENCV_JAVA ${pathOPENCV}/native/libs/${ANDROID_ABI}/libopencv_java4.so)
 
