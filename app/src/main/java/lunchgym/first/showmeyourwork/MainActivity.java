@@ -7,6 +7,7 @@ import android.app.AlertDialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
+import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
 import android.media.Image;
@@ -98,6 +99,9 @@ public class MainActivity extends AppCompatActivity {
     Button btnCapture;
     Image imageCapture;
 
+    //회전용 매트릭스
+    Matrix rotatedMatrix;
+
 
 
     //==============================================================================================
@@ -136,6 +140,7 @@ public class MainActivity extends AppCompatActivity {
                 // 후에 opencv 와 연동하면 opencv 에서 데이터 받는것도 ar fragment 에서 받아와야할지도
                 imageCapture = Objects.requireNonNull(arFragment.getArSceneView().getArFrame()).acquireCameraImage();
 
+
                 //대기 다이어로그 띄어주기
                 waitingDialog.show();
 
@@ -144,6 +149,14 @@ public class MainActivity extends AppCompatActivity {
 
                 //얻은 비트맵
                 Bitmap bitmapCapture = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length, null);
+
+                //90도 돌아가있어서 다시 세로로 돌려주기
+                //안 돌려줘도 글자 인식하는데 세로로 세워주면 인식률 올라가지 않을까해서 돌림)
+                //확인해봤는데 인식률 많이 올라감 굳굳
+                rotatedMatrix = new Matrix();
+                rotatedMatrix.postRotate(90);
+                bitmapCapture = Bitmap.createBitmap(bitmapCapture, 0, 0, bitmapCapture.getWidth(), bitmapCapture.getHeight(), rotatedMatrix, true);
+
 
                 //테스트용(확인해 봤는데 90도 돌아가 있네ㄷㄷ)
                 ivTest.setImageBitmap(bitmapCapture);
