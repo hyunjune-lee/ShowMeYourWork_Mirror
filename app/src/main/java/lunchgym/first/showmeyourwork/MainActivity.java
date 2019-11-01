@@ -15,6 +15,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -70,6 +71,11 @@ public class MainActivity extends AppCompatActivity {
         System.loadLibrary("opencv_java4");
         System.loadLibrary("native-lib");
     }
+
+
+    //이미지 테스용
+    private ImageView ivTest;
+
     //==============================================================================================
 
     //AR 관련 변수==================================================================================
@@ -106,6 +112,11 @@ public class MainActivity extends AppCompatActivity {
 
 
         //파이어베이스 OCR==========================================================================
+        //테스트(버그 픽스용)
+        ivTest = findViewById(R.id.iv_test);
+
+
+
         //대기 다이어로그
         waitingDialog = new SpotsDialog.Builder()
                 .setCancelable(false)
@@ -130,7 +141,11 @@ public class MainActivity extends AppCompatActivity {
 
                 //얻은 비트맵
                 Bitmap bitmapCapture = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length, null);
-                
+
+                //테스트용(확인해 봤는데 90도 돌아가 있네ㄷㄷ)
+                ivTest.setImageBitmap(bitmapCapture);
+
+                //파이어베이스 문자 인식
                 recognizeText(bitmapCapture);
 
             } catch (NotYetAvailableException e) {
@@ -212,17 +227,20 @@ public class MainActivity extends AppCompatActivity {
                         Log.w(TAG, "onSuccess: "+firebaseVisionText.getText() );
                         //인덱스 들어가니깐 아마 예외처리 해줘야할듯
                         Toast.makeText(getApplicationContext()  , firebaseVisionText.getTextBlocks().get(0).toString(), Toast.LENGTH_LONG).show();
-
-
                         //대기 다이어로그 없애주기
                         waitingDialog.dismiss();
+
+
                     }
                 }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                Log.d(TAG, "onFailure: 파이어베이스 텍스트 인식 실패");
-
+                Log.w(TAG, "onFailure: 파이어베이스 텍스트 인식 실패");
+                //대기 다이어로그 없애주기
+                waitingDialog.dismiss();
             }
+
+
         });
 
 
