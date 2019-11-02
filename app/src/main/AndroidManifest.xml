@@ -28,7 +28,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+            android:hardwareAccelerated="true">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -42,8 +43,11 @@
             android:configChanges="keyboardHidden|orientation">
 
         </activity>
-        <activity android:name=".WebviewActivity"/>
+        <activity android:name=".WebviewActivity"
+            android:hardwareAccelerated="true" />
         <activity android:name=".ExoplayerActivity"/>
+        <activity android:name=".CrawlingActivity"
+            android:hardwareAccelerated="true"/>
     </application>
 
 </manifest>

@@ -49,7 +49,9 @@ dependencies {
     //크롤링, exoplayer에 사용할 jsoup
     implementation 'org.jsoup:jsoup:1.10.3'
 
-
     //hls(HttpLiveStreaming)사용
     implementation "com.google.android.exoplayer:exoplayer-hls:2.10.5"
+
+    // jsoup HTML parser library @ https://jsoup.org/
+    implementation 'org.jsoup:jsoup:1.12.1'
 }

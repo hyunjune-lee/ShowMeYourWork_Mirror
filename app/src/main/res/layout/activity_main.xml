@@ -30,7 +30,7 @@
         />
 
     <Button
-        android:id="@+id/crolling_btn"
+        android:id="@+id/crawling_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="크롤링"
