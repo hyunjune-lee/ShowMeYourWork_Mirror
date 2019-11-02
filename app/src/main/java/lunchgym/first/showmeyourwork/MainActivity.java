@@ -3,10 +3,14 @@ package lunchgym.first.showmeyourwork;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 
 
 public class MainActivity extends AppCompatActivity{
@@ -15,6 +19,10 @@ public class MainActivity extends AppCompatActivity{
     Button webviewBtn;
     Button crawlingBtn;
     Intent intent;
+    String input = "";
+    String cardinal;
+    String name;
+    private String htmlPageUrl ="https://search.naver.com/search.naver?where=video&sm=tab_jum&query="; //파싱할 홈페이지의 URL주소
 
 
     @Override
@@ -52,12 +60,54 @@ public class MainActivity extends AppCompatActivity{
         crawlingBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                intent = new Intent(MainActivity.this, CrawlingActivity.class);
-                startActivity(intent);
+                final EditText editText = new EditText(MainActivity.this);
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setTitle("입력");
+                builder.setView(editText);
+                builder.setPositiveButton("입력", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        input = editText.getText().toString();
+
+                        if(input.length()>0){
+                            cardinal = input.substring(0, 2);
+                            name = input.substring(3);
+                        }
+                        Log.e("cralingActivity", "cardinal :"+cardinal);
+                        Log.e("cralingActivity", "name :"+name);
+
+                        htmlPageUrl = htmlPageUrl+cardinal+"%20"+name;
+
+                        intent = new Intent(MainActivity.this, CrawlingActivity.class);
+                        intent.putExtra("htmlPageUrl", htmlPageUrl);
+                        startActivity(intent);
+
+                    }
+                });
+
+                builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+
+                builder.show();
+
+
+
+
             }
         });
 
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        htmlPageUrl ="https://search.naver.com/search.naver?where=video&sm=tab_jum&query=";
     }
 }
 
