@@ -39,7 +39,7 @@
         opencv:srcCompat="@android:drawable/btn_star_big_on" />
 
 
-    <!--    <org.opencv.android.JavaCameraView
+        <org.opencv.android.JavaCameraView
             android:id="@+id/activity_surface_view"
             android:layout_width="match_parent"
             android:layout_height="250dp"
@@ -48,7 +48,7 @@
             opencv:camera_id="any"
             opencv:layout_constraintBottom_toBottomOf="parent"
             opencv:layout_constraintStart_toStartOf="parent"
-            opencv:layout_constraintVertical_weight="1" />-->
+            opencv:layout_constraintVertical_weight="1" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -15,6 +15,8 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.TextureView;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -181,7 +183,6 @@ public class MainActivity extends AppCompatActivity {
 
 
         });
-
         //AR========================================================================================
         texture = new ExternalTexture();
         mediaPlayer = new MediaPlayer();
@@ -191,15 +192,29 @@ public class MainActivity extends AppCompatActivity {
         try {
 //            mediaPlayer.setDataSource("https://serviceapi.nmv.naver.com/view/ugcPlayer.nhn?vid=7DCA747C80C640305145C42E13B6329C4660&inKey=V1268b72f809c30d1ef02c87c44d03bf0878269db9d3b7e681252ba8028ec7566512ec87c44d03bf08782&wmode=opaque&hasLink=1&autoPlay=false&beginTime=0");
             mediaPlayer.setDataSource("https://media.fmkorea.com/files/attach/new/20191101/486263/1651469947/2337202584/508a93d482fc2fcec3d50429dfc17cbc.gif.mp4?d\n");
+
+//            mediaPlayer.setDataSource("https://serviceapi.nmv.naver.com/view/ugcPlayer.nhn?vid=868C50042258C7AE9C2D04CC676647DAE467&inKey=V1293888fc49f02f69fc808ba95d58f5a04af023bda5832858e0065e708994595a47208ba95d58f5a04af&wmode=opaque&hasLink=1&autoPlay=false&beginTime=0");
+//            mediaPlayer.setDataSource("http://serviceapi.nmv.naver.com/flash/redirectToMp4Url.mp4?vid=3AAD30F69B5C6BC5183A24AE4E1968C52DD2&inKey=V128195e67a603d901fabd96732a009e527a97b95dd4c9b69d162f82872f0e63b356fd96732a009e527a9");
             mediaPlayer.prepare();
         } catch (IOException e) {
             e.printStackTrace();
             Log.w(TAG, "mediaPlayer.setDataSource: fail" );
-        }
-
+    }
 
         mediaPlayer.setSurface(texture.getSurface());
-        mediaPlayer.setLooping(true);
+        mediaPlayer.setLooping(false);
+
+
+
+/*        //테스트
+        ExternalTexture hiTexture;
+        WebView webView = null;
+        webView.getOverlay();
+        TextureView textureView;*/
+
+
+
+
 
         ModelRenderable
                 .builder()
@@ -261,7 +276,8 @@ public class MainActivity extends AppCompatActivity {
                     public void onSuccess(FirebaseVisionText firebaseVisionText) {
                         Log.w(TAG, "OCR -  onSuccess: "+firebaseVisionText.getText() );
                         //인덱스 들어가니깐 아마 예외처리 해줘야할듯
-                        Toast.makeText(getApplicationContext()  , firebaseVisionText.getTextBlocks().get(0).toString(), Toast.LENGTH_LONG).show();
+
+                        Log.w(TAG, "OCR -  onSuccess: "+firebaseVisionText.getTextBlocks().get(0).getText() );
 
                         //이미지 acquired 해제해주기
                         //이거 안해주면 5번째찍을때부터 ResourceExhaustedException 뜸
@@ -309,8 +325,15 @@ public class MainActivity extends AppCompatActivity {
 
             if (image.getTrackingState() == TrackingState.TRACKING) {
 
-                if (image.getName().equals("image")) {
+                if (image.getName().equals("ireneImage") || image.getName().equals("5기 조은흠") || image.getName().equals("5기 조세흠")
+                        || image.getName().equals("5기 최병규") || image.getName().equals("5기 최형중") || image.getName().equals("5기 최미정")
+                        || image.getName().equals("5기 구찬서") || image.getName().equals("5기 하동원") || image.getName().equals("5기 한기형")
+                        || image.getName().equals("5기 허지행") || image.getName().equals("5기 임세훈")
+                        || image.getName().equals("5기 오승연")
+                ) {
 
+                    Toast.makeText(getApplicationContext()  , image.getName(), Toast.LENGTH_LONG).show();
+                    Log.w(TAG, "isImageDetected true ");
                     isImageDetected = true;
 
                     playVideo(image.createAnchor(image.getCenterPose()), image.getExtentX(),
