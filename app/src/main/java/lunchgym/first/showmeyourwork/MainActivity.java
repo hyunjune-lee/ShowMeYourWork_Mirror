@@ -13,8 +13,13 @@ import android.graphics.YuvImage;
 import android.media.Image;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.webkit.JavascriptInterface;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -35,12 +40,14 @@ import com.google.ar.sceneform.rendering.Color;
 import com.google.ar.sceneform.rendering.ExternalTexture;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.firebase.ml.vision.FirebaseVision;
-import com.google.firebase.ml.vision.cloud.FirebaseVisionCloudDetectorOptions;
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import com.google.firebase.ml.vision.text.FirebaseVisionCloudTextRecognizerOptions;
 import com.google.firebase.ml.vision.text.FirebaseVisionText;
 import com.google.firebase.ml.vision.text.FirebaseVisionTextRecognizer;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.core.Mat;
 
@@ -59,8 +66,21 @@ import dmax.dialog.SpotsDialog;
 
 public class MainActivity extends AppCompatActivity {
 
-
     private static final String TAG = "opencv";
+
+    //Crawling 관련 변수 ==========================================================================
+
+    private String htmlPageUrl ="https://search.naver.com/search.naver?where=video&sm=tab_jum&query="; //파싱할 홈페이지의 URL주소
+    private String cardinal;
+    private String name;
+    private WebView fakeWb;
+    private String source = "";
+    private String videoSrc;
+    private String playUrl = "";
+    private JsoupAsyncTask jsoupAsyncTask;
+    private WebviewAsyncTask webViewAsyncTask;
+
+
 
     //OpenCV 관련 변수===============================================================================
     private Mat matInput;
@@ -117,6 +137,24 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //crawling 하기 전 fake webview 설정==========================================================================
+        fakeWb = findViewById(R.id.wb_fake);
+        fakeWb.setVisibility(View.INVISIBLE);
+
+        //Webview 자바스크립트 활성화
+        fakeWb.getSettings().setJavaScriptEnabled(true);
+        //자바스크립트 인터페이스 연결
+        fakeWb.addJavascriptInterface(new MyJavascriptInterface(), "Android");
+        fakeWb.setWebViewClient(new WebViewClient() {
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                //자바스크립트 인터페이스로 연결되어있는 getHtml을 실행
+                //자바스크립트 기본 메소드로 html소스를 통째로 지정해서 인자로 넘겨줌
+                view.loadUrl("javascript:window.Android.getHtml(document.getElementsByTagName('body')[0].innerHTML);");
+            }
+        });
+
 
         //파이어베이스 OCR==========================================================================
         //테스트(버그 픽스용)
@@ -127,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
         //대기 다이어로그
         waitingDialog = new SpotsDialog.Builder()
                 .setCancelable(false)
-                .setMessage("잠시만 기달려주세요")
+                .setMessage("잠시만 기다려주세요")
                 .setContext(this)
                 .build();
 
@@ -175,11 +213,6 @@ public class MainActivity extends AppCompatActivity {
             }
 
 
-
-
-
-
-
         });
 
         //AR========================================================================================
@@ -190,7 +223,9 @@ public class MainActivity extends AppCompatActivity {
 //        mediaPlayer = MediaPlayer.create(this, R.raw.test_video);
         try {
 //            mediaPlayer.setDataSource("https://serviceapi.nmv.naver.com/view/ugcPlayer.nhn?vid=7DCA747C80C640305145C42E13B6329C4660&inKey=V1268b72f809c30d1ef02c87c44d03bf0878269db9d3b7e681252ba8028ec7566512ec87c44d03bf08782&wmode=opaque&hasLink=1&autoPlay=false&beginTime=0");
+
             mediaPlayer.setDataSource("https://media.fmkorea.com/files/attach/new/20191101/486263/1651469947/2337202584/508a93d482fc2fcec3d50429dfc17cbc.gif.mp4?d\n");
+
             mediaPlayer.prepare();
         } catch (IOException e) {
             e.printStackTrace();
@@ -259,7 +294,34 @@ public class MainActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<FirebaseVisionText>() {
                     @Override
                     public void onSuccess(FirebaseVisionText firebaseVisionText) {
-                        Log.w(TAG, "OCR -  onSuccess: "+firebaseVisionText.getText() );
+//                        Log.w(TAG, "OCR -  onSuccess: "+firebaseVisionText.getText() );
+
+                        Log.w(TAG, "OCR -  onSuccess: "+firebaseVisionText.getTextBlocks().get(0).getText() );
+
+                        try{
+                            String inputText = firebaseVisionText.getTextBlocks().get(0).getText();
+
+                            if(inputText.length()>0){
+                                cardinal = inputText.substring(0, 2);
+                                name = inputText.substring(3,6);
+                            }
+                            Toast.makeText(MainActivity.this, cardinal+" "+name, Toast.LENGTH_SHORT).show();
+                            htmlPageUrl = htmlPageUrl+cardinal+"%20"+name;
+
+//                            Intent intent = new Intent(MainActivity.this, CrawlingActivity.class);
+//                            intent.putExtra("htmlPageUrl", htmlPageUrl);
+//                            startActivity(intent);
+
+                            fakeWb.loadUrl(htmlPageUrl);
+
+                            webViewAsyncTask = new WebviewAsyncTask();
+                            webViewAsyncTask.execute();
+
+                        }catch(IndexOutOfBoundsException | IllegalArgumentException e){
+                            Toast.makeText(MainActivity.this, "사진을 다시 찍어주세요.", Toast.LENGTH_SHORT).show();
+                            Log.e(TAG, "OCR - onSuccess 에러내용 : "+e );
+                        }
+
                         //인덱스 들어가니깐 아마 예외처리 해줘야할듯
                         Toast.makeText(getApplicationContext()  , firebaseVisionText.getTextBlocks().get(0).toString(), Toast.LENGTH_LONG).show();
 
@@ -269,7 +331,6 @@ public class MainActivity extends AppCompatActivity {
 
                         //대기 다이어로그 없애주기
                         waitingDialog.dismiss();
-
 
                     }
                 }).addOnFailureListener(new OnFailureListener() {
@@ -378,6 +439,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
+        htmlPageUrl ="https://search.naver.com/search.naver?where=video&sm=tab_jum&query=";
 
         //OpenCV====================================================================================
         /*if (!OpenCVLoader.initDebug()) {
@@ -538,7 +600,139 @@ public class MainActivity extends AppCompatActivity {
         return nv21;
     }
 
-    //==============================================================================================
+    //crawling 관련 class==============================================================================================
+    public class MyJavascriptInterface {
+        @JavascriptInterface
+        public void getHtml(String html){
+            //위 자바스크립트가 호출되면 여기로 html이 반환된다.
+            source = html;
+        }
+    }
+
+    private class WebviewAsyncTask extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            jsoupAsyncTask = new JsoupAsyncTask();
+            jsoupAsyncTask.execute();
+        }
+    }
+
+
+
+    private class JsoupAsyncTask extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            //Document doc = Jsoup.connect(htmlPageUrl).get();
+            try {
+                //가짜 webview에서 받아온 String source를 Document로 파싱한다.
+                Document doc = Jsoup.parse(source);
+                Log.e("crawlingactivity", "source: "+ source);
+
+                Elements urlElements = doc.select("li[id=item_index1]");
+                //linkUrl을 가져온다.
+                String linkUrl = urlElements.attr("data-cr-url");
+                Log.e("crawlingactivity", "url: "+linkUrl);
+
+                //video의 source를 가져온다.
+                Elements videoSrcElements = doc.select("li[id=item_index1] div div a");
+                videoSrc = videoSrcElements.attr("data-api");
+                Log.e("crawlingactivity", "videoSrc: "+ videoSrc);
+
+
+                Document forVideo = Jsoup.connect(videoSrc).get();
+
+                Elements videoUrlElements = forVideo.select("body");
+                String videoUrl = videoUrlElements.text();
+                Log.e("crawlingactivity", "videoUrl: "+videoUrl);
+
+                String splitVideoUrl = videoUrl.split("sPlayUrl\":\"")[1];
+                playUrl = splitVideoUrl.split("\"")[0];
+
+                Log.e("crawlingactivity", "playUrl: "+ playUrl);
+
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            Toast.makeText(MainActivity.this, "동영상 불러오기 완료", Toast.LENGTH_SHORT).show();
+            htmlPageUrl ="https://search.naver.com/search.naver?where=video&sm=tab_jum&query=";
+
+            setAR(playUrl);
+        }
+    }
+
+    public void setAR(String url){
+        texture = new ExternalTexture();
+        mediaPlayer = new MediaPlayer();
+//        mediaPlayer = MediaPlayer.create(this, Uri.parse("https://serviceapi.nmv.naver.com/view/ugcPlayer.nhn?vid=7DCA747C80C640305145C42E13B6329C4660&inKey=V1268b72f809c30d1ef02c87c44d03bf0878269db9d3b7e681252ba8028ec7566512ec87c44d03bf08782&wmode=opaque&hasLink=1&autoPlay=false&beginTime=0"));
+//
+//        mediaPlayer = MediaPlayer.create(this, R.raw.test_video);
+        try {
+//            mediaPlayer.setDataSource("https://serviceapi.nmv.naver.com/view/ugcPlayer.nhn?vid=7DCA747C80C640305145C42E13B6329C4660&inKey=V1268b72f809c30d1ef02c87c44d03bf0878269db9d3b7e681252ba8028ec7566512ec87c44d03bf08782&wmode=opaque&hasLink=1&autoPlay=false&beginTime=0");
+
+            mediaPlayer.setDataSource(url);
+            mediaPlayer.prepare();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.w(TAG, "mediaPlayer.setDataSource: fail" );
+        }
+
+        mediaPlayer.setSurface(texture.getSurface());
+        mediaPlayer.setLooping(true);
+
+        ModelRenderable
+                .builder()
+                .setSource(this, Uri.parse("video_screen.sfb"))
+                .build()
+                .thenAccept(modelRenderable -> {
+                    modelRenderable.getMaterial().setExternalTexture("videoTexture",
+                            texture);
+                    modelRenderable.getMaterial().setFloat4("keyColor",
+                            new Color(0.01843f, 1f, 0.098f));
+
+                    renderable = modelRenderable;
+                });
+
+        arFragment = (CustomArFragment)
+                getSupportFragmentManager().findFragmentById(R.id.ar_fragment);
+
+        scene = arFragment.getArSceneView().getScene();
+
+        scene.addOnUpdateListener(this::onUpdate);
+    }
 
 
 }
