@@ -1,8 +1,6 @@
 package lunchgym.first.showmeyourwork;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -13,14 +11,12 @@ import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
@@ -31,19 +27,16 @@ public class CrawlingActivity extends Activity {
 //    private String htmlPageUrl ="https://section.cafe.naver.com/cafe-home/search/combinations?query="; //파싱할 홈페이지의 URL주소
     private String htmlPageUrl =""; //파싱할 홈페이지의 URL주소
     private TextView textviewHtmlDocument;
-    private String htmlContentInStringFormat="";
-    String input = "";
-    String cardinal;
-    String name;
-    WebView crawlingWebview;
-    WebView crawlingWebviewFinish;
+
+    WebView webViewForCrawling;
+    WebView finalWebView;
     JsoupAsyncTask jsoupAsyncTask;
 
     int cnt=0;
     String videoUrl = "null";
     String source = "";
-    String url1;
-    String playUrl1;
+    String videoSrc;
+    String playUrl;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -56,17 +49,17 @@ public class CrawlingActivity extends Activity {
         textviewHtmlDocument = (TextView) findViewById(R.id.textView);
         textviewHtmlDocument.setMovementMethod(new ScrollingMovementMethod());
 
-        crawlingWebviewFinish = findViewById(R.id.crawling_webview_finish);
-        crawlingWebviewFinish.setVisibility(View.INVISIBLE);
+        finalWebView = findViewById(R.id.crawling_webview_finish);
+        finalWebView.setVisibility(View.INVISIBLE);
 
-        crawlingWebview = findViewById(R.id.crawling_webview);
-//        crawlingWebview.setVisibility(View.INVISIBLE);
+        webViewForCrawling = findViewById(R.id.crawling_webview);
+//        webViewForCrawling.setVisibility(View.INVISIBLE);
 
         //Webview 자바스크립트 활성화
-        crawlingWebview.getSettings().setJavaScriptEnabled(true);
+        webViewForCrawling.getSettings().setJavaScriptEnabled(true);
         //자바스크립트 인터페이스 연결
-        crawlingWebview.addJavascriptInterface(new MyJavascriptInterface(), "Android");
-        crawlingWebview.setWebViewClient(new WebViewClient() {
+        webViewForCrawling.addJavascriptInterface(new MyJavascriptInterface(), "Android");
+        webViewForCrawling.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
@@ -75,9 +68,7 @@ public class CrawlingActivity extends Activity {
                 view.loadUrl("javascript:window.Android.getHtml(document.getElementsByTagName('body')[0].innerHTML);");
             }
         });
-        crawlingWebview.loadUrl(htmlPageUrl);
-
-
+        webViewForCrawling.loadUrl(htmlPageUrl);
 
         Button htmlTitleButton =  findViewById(R.id.button);
         htmlTitleButton.setOnClickListener(new View.OnClickListener() {
@@ -115,29 +106,30 @@ public class CrawlingActivity extends Activity {
 
                 //Document doc = Jsoup.connect(htmlPageUrl).get();
                 try {
+                    //가짜 webview에서 받아온 String source를 Document로 파싱한다.
                 Document doc = Jsoup.parse(source);
 
-                Elements elements = doc.select("li[id=item_index1]");
-                String url = elements.attr("data-cr-url");
+                Elements urlElements = doc.select("li[id=item_index1]");
+                //linkUrl을 가져온다.
+                String linkUrl = urlElements.attr("data-cr-url");
+                Log.e("crawlingactivity", "url: "+linkUrl);
 
-                Log.e("crawlingactivity", "urli: "+url);
-
-                Elements elements1 = doc.select("li[id=item_index1] div div a");
-                url1 = elements1.attr("data-api");
-
-                Log.e("crawlingactivity", "url1: "+url1);
+                //video의 source를 가져온다.
+                Elements videoSrcElements = doc.select("li[id=item_index1] div div a");
+                videoSrc = videoSrcElements.attr("data-api");
+                Log.e("crawlingactivity", "videoSrc: "+ videoSrc);
 
 
-                Document doc1 = Jsoup.connect(url1).get();
+                Document forVideo = Jsoup.connect(videoSrc).get();
 
-                Elements elements2 = doc1.select("body");
-                String url2 = elements2.text();
-                Log.e("crawlingactivity", "url2: "+url2);
+                Elements videoUrlElements = forVideo.select("body");
+                String videoUrl = videoUrlElements.text();
+                Log.e("crawlingactivity", "url2: "+videoUrl);
 
-                String playUrl = url2.split("sPlayUrl\":\"")[1];
-                playUrl1 = playUrl.split("\"")[0];
+                String splitVideoUrl = videoUrl.split("sPlayUrl\":\"")[1];
+                playUrl = splitVideoUrl.split("\"")[0];
 
-                    Log.e("crawlingactivity", "playUrl1: "+playUrl1);
+                    Log.e("crawlingactivity", "playUrl: "+ playUrl);
 
 
                 } catch (IOException e) {
@@ -181,9 +173,9 @@ public class CrawlingActivity extends Activity {
             @Override
             protected void onPostExecute(Void result) {
                 textviewHtmlDocument.setText(source);
-                crawlingWebviewFinish.setVisibility(View.VISIBLE);
-                crawlingWebviewFinish.loadUrl(playUrl1);
 
+                finalWebView.setVisibility(View.VISIBLE);
+                finalWebView.loadUrl(playUrl);
             }
         }
 
