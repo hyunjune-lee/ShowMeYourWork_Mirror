@@ -27,7 +27,7 @@ public class CustomArFragment extends ArFragment {
         config.setUpdateMode(Config.UpdateMode.LATEST_CAMERA_IMAGE);
         config.setFocusMode(Config.FocusMode.AUTO);
 
-
+/*
         //AR 이미지 데이터 베이스
         AugmentedImageDatabase aid = new AugmentedImageDatabase(session);
 
@@ -37,13 +37,8 @@ public class CustomArFragment extends ArFragment {
         //이미지 데이터베이스에 넣을때 키워드도 같이 들어가네
         aid.addImage("papers", papersImage);
 
-        //AR 이미지 데이터 베이스에 예쁜 아이린 이미지(테스트용)
-        Bitmap airImage = BitmapFactory.decodeResource(getResources(), R.drawable.white_board3);
-        //이미지 데이터베이스에 넣을때 키워드도 같이 들어가네
-        aid.addImage("airImage", airImage);
-
         //데이터 베이스를 다시 config 에 설정해주고 리턴해주네
-        config.setAugmentedImageDatabase(aid);
+        config.setAugmentedImageDatabase(aid);*/
 
         this.getArSceneView().setupSession(session);
 
