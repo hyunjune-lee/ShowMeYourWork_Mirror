@@ -255,7 +255,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         mediaPlayer.setSurface(texture.getSurface());
-        mediaPlayer.setLooping(true);
+        mediaPlayer.setLooping(false);
 
         ModelRenderable
                 .builder()
