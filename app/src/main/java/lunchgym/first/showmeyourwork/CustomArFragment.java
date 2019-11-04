@@ -42,6 +42,7 @@ public class CustomArFragment extends ArFragment {
 
         this.getArSceneView().setupSession(session);
 
+
         return config;
 
     }
