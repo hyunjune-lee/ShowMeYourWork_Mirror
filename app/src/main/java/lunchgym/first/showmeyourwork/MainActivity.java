@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
@@ -135,6 +136,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
         setContentView(R.layout.activity_main);
 
         //crawling 하기 전 fake webview 설정==========================================================================
@@ -225,8 +228,8 @@ public class MainActivity extends AppCompatActivity {
 //            mediaPlayer.setDataSource("https://serviceapi.nmv.naver.com/view/ugcPlayer.nhn?vid=7DCA747C80C640305145C42E13B6329C4660&inKey=V1268b72f809c30d1ef02c87c44d03bf0878269db9d3b7e681252ba8028ec7566512ec87c44d03bf08782&wmode=opaque&hasLink=1&autoPlay=false&beginTime=0");
 
             mediaPlayer.setDataSource("https://media.fmkorea.com/files/attach/new/20191101/486263/1651469947/2337202584/508a93d482fc2fcec3d50429dfc17cbc.gif.mp4?d\n");
-
             mediaPlayer.prepare();
+
         } catch (IOException e) {
             e.printStackTrace();
             Log.w(TAG, "mediaPlayer.setDataSource: fail" );
@@ -234,6 +237,15 @@ public class MainActivity extends AppCompatActivity {
 
 
         mediaPlayer.setSurface(texture.getSurface());
+        mediaPlayer.setOnVideoSizeChangedListener(new MediaPlayer.OnVideoSizeChangedListener() {
+            @Override
+            public void onVideoSizeChanged(MediaPlayer mp, int width, int height) {
+
+            }
+        });
+
+
+
         mediaPlayer.setLooping(true);
 
         ModelRenderable
@@ -302,11 +314,11 @@ public class MainActivity extends AppCompatActivity {
                             String inputText = firebaseVisionText.getTextBlocks().get(0).getText();
 
                             if(inputText.length()>0){
-                                cardinal = inputText.substring(0, 2);
+                                cardinal = inputText.substring(0, 1);
                                 name = inputText.substring(3,6);
                             }
-                            Toast.makeText(MainActivity.this, cardinal+" "+name, Toast.LENGTH_SHORT).show();
-                            htmlPageUrl = htmlPageUrl+cardinal+"%20"+name;
+                            Toast.makeText(MainActivity.this, cardinal+"기%20"+name, Toast.LENGTH_SHORT).show();
+                            htmlPageUrl = htmlPageUrl+cardinal+"기%20"+name;
 
 //                            Intent intent = new Intent(MainActivity.this, CrawlingActivity.class);
 //                            intent.putExtra("htmlPageUrl", htmlPageUrl);

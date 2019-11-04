@@ -32,7 +32,7 @@ public class CustomArFragment extends ArFragment {
 
 
         //AR 이미지 데이터 베이스에 예쁜 아이린 이미지(테스트용)
-        Bitmap image = BitmapFactory.decodeResource(getResources(), R.drawable.white_board);
+        Bitmap image = BitmapFactory.decodeResource(getResources(), R.drawable.cleaner);
         //이미지 데이터베이스에 넣을때 키워드도 같이 들어가네
         aid.addImage("image", image);
 
@@ -55,10 +55,6 @@ public class CustomArFragment extends ArFragment {
         getPlaneDiscoveryController().setInstructionView(null);
 
         return frameLayout;
-
-
-
-
 
 
     }

@@ -27,6 +27,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+
     <WebView
         android:id="@+id/crawling_webview"
         android:layout_width="match_parent"

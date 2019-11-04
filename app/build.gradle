@@ -66,6 +66,9 @@ dependencies {
     //크롤링, exoplayer에 사용할 jsoup
     implementation 'org.jsoup:jsoup:1.10.3'
 
+    //lottie 사용
+    implementation 'com.airbnb.android:lottie:2.3.0'
+
 
 }
 

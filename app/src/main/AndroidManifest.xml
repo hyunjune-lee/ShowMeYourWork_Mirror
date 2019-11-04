@@ -31,8 +31,10 @@
         <activity android:name=".CrawlingActivity"
             android:hardwareAccelerated="true"/>
         <activity android:name=".MainActivity"
+            android:hardwareAccelerated="true"
             android:screenOrientation="portrait"
             android:configChanges="keyboardHidden|orientation"
+
             >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
