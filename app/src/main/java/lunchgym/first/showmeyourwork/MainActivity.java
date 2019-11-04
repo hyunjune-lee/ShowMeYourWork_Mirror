@@ -241,9 +241,9 @@ public class MainActivity extends AppCompatActivity {
 //
 //        mediaPlayer = MediaPlayer.create(this, R.raw.test_video);
         try {
-//            mediaPlayer.setDataSource("https://serviceapi.nmv.naver.com/view/ugcPlayer.nhn?vid=7DCA747C80C640305145C42E13B6329C4660&inKey=V1268b72f809c30d1ef02c87c44d03bf0878269db9d3b7e681252ba8028ec7566512ec87c44d03bf08782&wmode=opaque&hasLink=1&autoPlay=false&beginTime=0");
 
-            mediaPlayer.setDataSource("https://media.fmkorea.com/files/attach/new/20191101/486263/1651469947/2337202584/508a93d482fc2fcec3d50429dfc17cbc.gif.mp4?d\n");
+
+            mediaPlayer.setDataSource("https://media.fmkorea.com/files/attach/new/20191101/3655109/2089104173/2339677357/1cb879a979e99e75f598d2e9038bfa4e.gif.mp4?d");
 
             mediaPlayer.prepare();
         } catch (IOException e) {
@@ -743,29 +743,37 @@ public class MainActivity extends AppCompatActivity {
             try {
                 //가짜 webview에서 받아온 String source를 Document로 파싱한다.
                 Document doc = Jsoup.parse(source);
-                Log.e("crawlingactivity", "source: "+ source);
+                Log.e("crawling", "source: "+ source);
 
                 Elements urlElements = doc.select("li[id=item_index1]");
                 //linkUrl을 가져온다.
                 String linkUrl = urlElements.attr("data-cr-url");
-                Log.e("crawlingactivity", "url: "+linkUrl);
-
-                //video의 source를 가져온다.
-                Elements videoSrcElements = doc.select("li[id=item_index1] div div a");
-                videoSrc = videoSrcElements.attr("data-api");
-                Log.e("crawlingactivity", "videoSrc: "+ videoSrc);
+                Log.e("crawling", "linkUrl: "+linkUrl);
 
 
-                Document forVideo = Jsoup.connect(videoSrc).get();
+                String novaLinkUrl = linkUrl.split("/")[3];
+                Log.e("crawling", "novaLinkUrl : "+novaLinkUrl);
 
-                Elements videoUrlElements = forVideo.select("body");
-                String videoUrl = videoUrlElements.text();
-                Log.e("crawlingactivity", "videoUrl: "+videoUrl);
+                if(novaLinkUrl.equals("teamnovaopen")){
+                    //video의 source를 가져온다.
+                    Elements videoSrcElements = doc.select("li[id=item_index1] div div a");
+                    videoSrc = videoSrcElements.attr("data-api");
+                    Log.e("crawling", "videoSrc: "+ videoSrc);
 
-                String splitVideoUrl = videoUrl.split("sPlayUrl\":\"")[1];
-                playUrl = splitVideoUrl.split("\"")[0];
+                    Document forVideo = Jsoup.connect(videoSrc).get();
 
-                Log.e("crawlingactivity", "playUrl: "+ playUrl);
+                    Elements videoUrlElements = forVideo.select("body");
+                    String videoUrl = videoUrlElements.text();
+                    Log.e("crawling", "videoUrl: "+videoUrl);
+
+                    String splitVideoUrl = videoUrl.split("sPlayUrl\":\"")[1];
+                    playUrl = splitVideoUrl.split("\"")[0];
+
+                    Log.e("crawling", "playUrl: "+ playUrl);
+                }else{
+
+                    playUrl="https://media.fmkorea.com/files/attach/new/20191101/3655109/2089104173/2339677357/1cb879a979e99e75f598d2e9038bfa4e.gif.mp4?d";
+                }
 
 
             } catch (IOException e) {
@@ -794,6 +802,9 @@ public class MainActivity extends AppCompatActivity {
         try {
 //            mediaPlayer.setDataSource("https://serviceapi.nmv.naver.com/view/ugcPlayer.nhn?vid=7DCA747C80C640305145C42E13B6329C4660&inKey=V1268b72f809c30d1ef02c87c44d03bf0878269db9d3b7e681252ba8028ec7566512ec87c44d03bf08782&wmode=opaque&hasLink=1&autoPlay=false&beginTime=0");
 
+            if(url.equals("https://media.fmkorea.com/files/attach/new/20191101/3655109/2089104173/2339677357/1cb879a979e99e75f598d2e9038bfa4e.gif.mp4?d")){
+                Toast.makeText(MainActivity.this, "동영상 검색 결과가 없습니다ㅠ", Toast.LENGTH_SHORT).show();
+            }
             mediaPlayer.setDataSource(url);
             mediaPlayer.prepare();
         } catch (IOException e) {
