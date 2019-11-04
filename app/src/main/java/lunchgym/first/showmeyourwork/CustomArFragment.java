@@ -33,9 +33,14 @@ public class CustomArFragment extends ArFragment {
 
 
         //AR 이미지 데이터 베이스에 예쁜 아이린 이미지(테스트용)
-        Bitmap image = BitmapFactory.decodeResource(getResources(), R.drawable.irene);
+        Bitmap papersImage = BitmapFactory.decodeResource(getResources(), R.drawable.papers);
         //이미지 데이터베이스에 넣을때 키워드도 같이 들어가네
-        aid.addImage("image", image);
+        aid.addImage("papers", papersImage);
+
+        //AR 이미지 데이터 베이스에 예쁜 아이린 이미지(테스트용)
+        Bitmap airImage = BitmapFactory.decodeResource(getResources(), R.drawable.white_board3);
+        //이미지 데이터베이스에 넣을때 키워드도 같이 들어가네
+        aid.addImage("airImage", airImage);
 
         //데이터 베이스를 다시 config 에 설정해주고 리턴해주네
         config.setAugmentedImageDatabase(aid);

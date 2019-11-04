@@ -239,6 +239,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+
         mediaPlayer.setSurface(texture.getSurface());
         mediaPlayer.setLooping(true);
 
@@ -378,11 +379,7 @@ public class MainActivity extends AppCompatActivity {
 
             if (image.getTrackingState() == TrackingState.TRACKING) {
 
-                if (image.getName().equals("ireneImage") || image.getName().equals("5기 조은흠") || image.getName().equals("5기 조세흠")
-                        || image.getName().equals("5기 최병규") || image.getName().equals("5기 최형중") || image.getName().equals("5기 최미정")
-                        || image.getName().equals("5기 구찬서") || image.getName().equals("5기 하동원") || image.getName().equals("5기 한기형")
-                        || image.getName().equals("5기 허지행") || image.getName().equals("5기 임세훈")
-                        || image.getName().equals("5기 오승연")
+                if (image.getName().equals("airImage") || image.getName().equals("papers")
                 ) {
 
                     isImageDetected = true;
