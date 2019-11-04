@@ -40,6 +40,7 @@ import com.google.ar.sceneform.rendering.Color;
 import com.google.ar.sceneform.rendering.ExternalTexture;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.firebase.ml.vision.FirebaseVision;
+import com.google.firebase.ml.vision.cloud.FirebaseVisionCloudDetectorOptions;
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import com.google.firebase.ml.vision.text.FirebaseVisionCloudTextRecognizerOptions;
 import com.google.firebase.ml.vision.text.FirebaseVisionText;
@@ -213,6 +214,11 @@ public class MainActivity extends AppCompatActivity {
             }
 
 
+
+
+
+
+
         });
 
         //AR========================================================================================
@@ -230,7 +236,8 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
             Log.w(TAG, "mediaPlayer.setDataSource: fail" );
-        }
+    }
+
 
 
         mediaPlayer.setSurface(texture.getSurface());
@@ -323,7 +330,8 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                         //인덱스 들어가니깐 아마 예외처리 해줘야할듯
-                        Toast.makeText(getApplicationContext()  , firebaseVisionText.getTextBlocks().get(0).toString(), Toast.LENGTH_LONG).show();
+
+                        Log.w(TAG, "OCR -  onSuccess: "+firebaseVisionText.getTextBlocks().get(0).getText() );
 
                         //이미지 acquired 해제해주기
                         //이거 안해주면 5번째찍을때부터 ResourceExhaustedException 뜸
@@ -331,6 +339,7 @@ public class MainActivity extends AppCompatActivity {
 
                         //대기 다이어로그 없애주기
                         waitingDialog.dismiss();
+
 
                     }
                 }).addOnFailureListener(new OnFailureListener() {
@@ -370,7 +379,8 @@ public class MainActivity extends AppCompatActivity {
 
             if (image.getTrackingState() == TrackingState.TRACKING) {
 
-                if (image.getName().equals("image")) {
+                if (image.getName().equals("airImage") || image.getName().equals("papers")
+                ) {
 
                     isImageDetected = true;
 
