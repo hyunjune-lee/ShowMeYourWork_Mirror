@@ -27,6 +27,7 @@ public class CustomArFragment extends ArFragment {
         config.setUpdateMode(Config.UpdateMode.LATEST_CAMERA_IMAGE);
         config.setFocusMode(Config.FocusMode.AUTO);
 
+
         //AR 이미지 데이터 베이스
         AugmentedImageDatabase aid = new AugmentedImageDatabase(session);
 
