@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
@@ -279,8 +280,6 @@ public class MainActivity extends AppCompatActivity {
         scene.addOnUpdateListener(this::onUpdate);
 
 
-
-
         //평면 터치해서 AR 비디오 띄어주기----------------------------------------------------------
         //*참고 chromakey video
         arFragment.setOnTapArPlaneListener(
@@ -305,7 +304,7 @@ public class MainActivity extends AppCompatActivity {
                             new Vector3(
                                     VIDEO_HEIGHT_METERS * (videoWidth / videoHeight), VIDEO_HEIGHT_METERS, 1.0f));
 
-                    Toast.makeText(getApplicationContext()  , "videoWidth " + videoWidth + "\n videoHeight" +videoHeight, Toast.LENGTH_LONG).show();
+//                    Toast.makeText(getApplicationContext()  , "videoWidth " + videoWidth + "\n videoHeight" +videoHeight, Toast.LENGTH_LONG).show();
 
 
 
