@@ -388,11 +388,11 @@ public class MainActivity extends AppCompatActivity {
                             String inputText = firebaseVisionText.getTextBlocks().get(0).getText();
 
                             if(inputText.length()>0){
-                                cardinal = inputText.substring(0, 2);
+                                cardinal = inputText.substring(0, 1);
                                 name = inputText.substring(3,6);
                             }
-                            Toast.makeText(MainActivity.this, cardinal+" "+name, Toast.LENGTH_SHORT).show();
-                            htmlPageUrl = htmlPageUrl+cardinal+"%20"+name;
+                            Toast.makeText(MainActivity.this, cardinal+"기 "+name, Toast.LENGTH_SHORT).show();
+                            htmlPageUrl = htmlPageUrl+cardinal+"기%20"+name;
 
 //                            Intent intent = new Intent(MainActivity.this, CrawlingActivity.class);
 //                            intent.putExtra("htmlPageUrl", htmlPageUrl);
