@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
 import android.graphics.Rect;
+import android.graphics.SurfaceTexture;
 import android.graphics.YuvImage;
 import android.media.Image;
 import android.media.MediaPlayer;
@@ -16,6 +17,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
@@ -29,11 +31,14 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.ar.core.Anchor;
 import com.google.ar.core.AugmentedImage;
 import com.google.ar.core.Frame;
+import com.google.ar.core.HitResult;
+import com.google.ar.core.Plane;
 import com.google.ar.core.TrackingState;
 import com.google.ar.core.exceptions.NotYetAvailableException;
 import com.google.ar.core.exceptions.ResourceExhaustedException;
 import com.google.ar.sceneform.AnchorNode;
 import com.google.ar.sceneform.FrameTime;
+import com.google.ar.sceneform.Node;
 import com.google.ar.sceneform.Scene;
 import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.rendering.Color;
@@ -112,6 +117,9 @@ public class MainActivity extends AppCompatActivity {
     private boolean isImageDetected = false;
 
 
+    // Controls the height of the video in world space.
+    private static final float VIDEO_HEIGHT_METERS = 0.85f;
+
     //==============================================================================================
 
 
@@ -155,6 +163,10 @@ public class MainActivity extends AppCompatActivity {
                 view.loadUrl("javascript:window.Android.getHtml(document.getElementsByTagName('body')[0].innerHTML);");
             }
         });
+
+
+
+
 
 
         //파이어베이스 OCR==========================================================================
@@ -222,6 +234,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //AR========================================================================================
+        // Create an ExternalTexture for displaying the contents of the video.
         texture = new ExternalTexture();
         mediaPlayer = new MediaPlayer();
 //        mediaPlayer = MediaPlayer.create(this, Uri.parse("https://serviceapi.nmv.naver.com/view/ugcPlayer.nhn?vid=7DCA747C80C640305145C42E13B6329C4660&inKey=V1268b72f809c30d1ef02c87c44d03bf0878269db9d3b7e681252ba8028ec7566512ec87c44d03bf08782&wmode=opaque&hasLink=1&autoPlay=false&beginTime=0"));
@@ -256,12 +269,78 @@ public class MainActivity extends AppCompatActivity {
                     renderable = modelRenderable;
                 });
 
+
+
         arFragment = (CustomArFragment)
                 getSupportFragmentManager().findFragmentById(R.id.ar_fragment);
 
         scene = arFragment.getArSceneView().getScene();
 
         scene.addOnUpdateListener(this::onUpdate);
+
+
+
+
+        //평면 터치해서 AR 비디오 띄어주기----------------------------------------------------------
+        //*참고 chromakey video
+        arFragment.setOnTapArPlaneListener(
+                (HitResult hitResult, Plane plane, MotionEvent motionEvent) -> {
+                    if (renderable == null) {
+                        return;
+                    }
+
+                    // Create the Anchor.
+                    Anchor anchor = hitResult.createAnchor();
+                    AnchorNode anchorNode = new AnchorNode(anchor);
+                    anchorNode.setParent(arFragment.getArSceneView().getScene());
+
+                    // Create a node to render the video and add it to the anchor.
+                    Node videoNode = new Node();
+                    videoNode.setParent(anchorNode);
+
+                    // Set the scale of the node so that the aspect ratio of the video is correct.
+                    float videoWidth = mediaPlayer.getVideoWidth();
+                    float videoHeight = mediaPlayer.getVideoHeight();
+                    videoNode.setLocalScale(
+                            new Vector3(
+                                    VIDEO_HEIGHT_METERS * (videoWidth / videoHeight), VIDEO_HEIGHT_METERS, 1.0f));
+
+                    Toast.makeText(getApplicationContext()  , "videoWidth " + videoWidth + "\n videoHeight" +videoHeight, Toast.LENGTH_LONG).show();
+
+
+
+                    // Start playing the video when the first node is placed.
+                    if (!mediaPlayer.isPlaying()) {
+                        mediaPlayer.start();
+
+                        // Wait to set the renderable until the first frame of the  video becomes available.
+                        // This prevents the renderable from briefly appearing as a black quad before the video
+                        // plays.
+                        texture
+                                .getSurfaceTexture()
+                                .setOnFrameAvailableListener(
+                                        (SurfaceTexture surfaceTexture) -> {
+                                            videoNode.setRenderable(renderable);
+                                            texture.getSurfaceTexture().setOnFrameAvailableListener(null);
+                                        });
+                    } else {
+                        videoNode.setRenderable(renderable);
+                    }
+                });
+
+
+
+
+
+
+
+
+        //------------------------------------------------------------------------------------------
+
+
+
+
+
 
 
         //==========================================================================================
@@ -363,13 +442,15 @@ public class MainActivity extends AppCompatActivity {
 
     //AR============================================================================================
     private void onUpdate(FrameTime frameTime) {
+        //여기서 ar 프래그먼트에서 프레임을 받아오네..
+        Frame frame = arFragment.getArSceneView().getArFrame();
 
-        if (isImageDetected)
+
+ /*       if (isImageDetected)
             return;
 
 
-        //여기서 ar 프래그먼트에서 프레임을 받아오네..
-        Frame frame = arFragment.getArSceneView().getArFrame();
+
 
         Collection<AugmentedImage> augmentedImages =
                 frame.getUpdatedTrackables(AugmentedImage.class);
@@ -392,7 +473,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
 
-        }
+        }*/
 
     }
 
